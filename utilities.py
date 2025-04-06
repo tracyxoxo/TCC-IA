@@ -40,3 +40,11 @@ def extract_filtered_files(
                 filterFiles_paths.append(filterFiles_path)
 
     return filterFiles_paths
+
+def standard_hour(hour):
+    hour = str(hour).replace("UTC", "").strip()
+
+    if ':' in hour:
+        hour = hour.replace(":", "")
+    
+    return hour

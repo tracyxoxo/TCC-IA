@@ -1,1 +1,5 @@
 data/*
+data_extracted/*
+data_extracted_final/*
+
+test.py

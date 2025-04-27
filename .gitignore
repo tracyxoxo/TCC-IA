@@ -3,3 +3,6 @@ data_extracted/*
 data_extracted_final/*
 
 test.py
+
+__pycache__/
+*.py[cod]

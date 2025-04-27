@@ -2,6 +2,8 @@ import os
 import zipfile
 import shutil as sh 
 from typing import List
+import plotly.express as px
+import plotly.graph_objects as go
 
 def extract_filtered_files(
     files_path: str,
@@ -55,3 +57,35 @@ def standard_hour(hour):
         hour = hour.replace(":", "")
     
     return hour
+
+def create_incorrect_data_matrix(df, variable, lower, upper, title, row, col, fig):
+    series = df[variable]
+    outlier_col = f'is_outlier_{variable}'
+    df[outlier_col] = (series < lower) | (series > upper)
+
+    counts = df[outlier_col].value_counts()
+    custom_labels = {
+        False: f'False (Normal) [{counts.get(False, 0)}]',
+        True: f'True (Anomalia) [{counts.get(True, 0)}]'
+    }
+
+    colors = {False: 'dodgerblue', True: 'red'}
+
+    for outlier_value in [False, True]:
+        subset = df[df[outlier_col] == outlier_value]
+
+        fig.add_trace(
+            go.Scattergl( 
+                x=subset['datetime'],
+                y=subset[variable],
+                mode='markers',
+                marker=dict(color=colors[outlier_value], size=2, opacity=0.5),
+                name=custom_labels[outlier_value],
+                legendgroup=custom_labels[outlier_value],
+                showlegend=True
+            ),
+            row=row,
+            col=col
+        )
+    fig.update_xaxes(title_text="Data e Hora", row=row, col=col)
+    fig.update_yaxes(title_text=variable, row=row, col=col)

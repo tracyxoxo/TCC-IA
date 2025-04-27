@@ -4,6 +4,7 @@ import shutil as sh
 from typing import List
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def extract_filtered_files(
     files_path: str,
@@ -89,3 +90,62 @@ def create_incorrect_data_matrix(df, variable, lower, upper, title, row, col, fi
         )
     fig.update_xaxes(title_text="Data e Hora", row=row, col=col)
     fig.update_yaxes(title_text=variable, row=row, col=col)
+
+def plot_two_variables_vs_time(df, var1, var2, var1_label=None, var2_label=None, title=None):
+    outlier_col_var1 = f'is_outlier_{var1}'
+    outlier_col_var2 = f'is_outlier_{var2}'
+
+    df_filtered = df[~(df[outlier_col_var1] | df[outlier_col_var2])] 
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scattergl(
+            x=df_filtered['datetime'],
+            y=df_filtered[var1],
+            name=var1_label if var1_label else var1,
+            mode='markers', 
+            marker=dict(color='firebrick', size=5, opacity=0.5)
+        ),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scattergl(
+            x=df_filtered['datetime'],
+            y=df_filtered[var2],
+            name=var2_label if var2_label else var2,
+            mode='markers',
+            marker=dict(color='dodgerblue', size=5, opacity=0.2)
+        ),
+        secondary_y=True,
+    )
+
+    fig.update_layout(
+        height=600,
+        width=1100,
+        title=title if title else f'{var1} e {var2} ao longo do tempo',
+        legend_title="Variáveis",
+        template="plotly_white"
+    )
+
+    fig.update_xaxes(title_text="Data e Hora", showline=True, linewidth=1, linecolor='rgba(0, 0, 0, 0.3)', ticks="outside")
+    
+    fig.update_yaxes(
+        title_text=var1_label if var1_label else var1,
+        secondary_y=False,
+        showline=True,
+        linewidth=1,
+        linecolor='rgba(255, 0, 0, 0.3)', 
+        tickfont=dict(color='rgba(255, 0, 0, 0.5)'), 
+    )
+
+    fig.update_yaxes(
+        title_text=var2_label if var2_label else var2,
+        secondary_y=True,
+        showline=True,
+        linewidth=1,
+        linecolor='rgba(0, 0, 255, 0.3)', 
+        tickfont=dict(color='rgba(0, 0, 255, 0.5)'), 
+    )
+    fig.show()

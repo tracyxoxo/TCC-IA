@@ -2,7 +2,9 @@
 
 # Colaboradores
 João Murilo de Amorim Mariano Santos;
+
 João Pedro Grinover Borgneth;
+
 Matheus Ferreira dos Santos Silvestre.
 
 # Resumo do projeto
